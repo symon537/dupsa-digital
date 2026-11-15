@@ -1,0 +1,89 @@
+{% extends "base_auth.html" %}
+{% load static %}
+{% block title %}Sign in - Malkia Konnect{% endblock %}
+{% block body %}
+<main class="login-page" {% if login_bg_url %}style="--login-bg: url('{{ login_bg_url }}')"{% endif %}>
+  {% if login_bg_url %}<div class="login-photo" aria-hidden="true"></div>{% endif %}
+  <div class="login-silhouette" aria-hidden="true"></div>
+
+  <section class="login-card">
+    <div class="brand-stack">
+      <img src="{% static 'images/emblem-color.png' %}" alt="Malkia Konnect logo">
+      <p class="brand-word">Malkia<br>Konnect</p>
+    </div>
+    <h1 class="login-title">Staff Attendance System</h1>
+    <p class="login-sub">Malkia Konnect Shop &ndash; Sinza, Dar es Salaam</p>
+
+    <form method="post" novalidate class="login-form-panel" id="loginForm">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger py-2 small" role="alert">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <div class="field-row">
+        <i class="bi bi-person-fill ico"></i>
+        <div>
+          <label for="{{ form.username.id_for_label }}">Username / Email</label>
+          {{ form.username }}
+          {% for e in form.username.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="field-row">
+        <i class="bi bi-lock-fill ico"></i>
+        <div>
+          <label for="{{ form.password.id_for_label }}">Password</label>
+          <div class="pw-wrap">
+            {{ form.password }}
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show or hide password"><i class="bi bi-eye"></i></button>
+          </div>
+          {% for e in form.password.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3 small">
+        <div class="form-check m-0">
+          <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
+          <label class="form-check-label fw-normal text-dark" for="remember_me">Remember me</label>
+        </div>
+        <a href="{% url 'accounts:password_reset' %}" class="fw-semibold" style="color:var(--mk-burgundy)">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-signin mb-3" id="signinBtn"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</button>
+    </form>
+
+    <div class="login-foot">
+      <i class="bi bi-gem crown" aria-hidden="true"></i>
+      <strong>Malkia Konnect</strong>
+      People &bull; Attendance &bull; Productivity
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function () {
+    var pw = document.getElementById('{{ form.password.id_for_label }}');
+    var btn = document.getElementById('togglePw');
+    btn.addEventListener('click', function () {
+      var show = pw.type === 'password';
+      pw.type = show ? 'text' : 'password';
+      btn.firstElementChild.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      var u = document.getElementById('{{ form.username.id_for_label }}');
+      if (!u.value.trim() || !pw.value) {
+        e.preventDefault();
+        var d = document.createElement('div');
+        d.className = 'alert alert-danger py-2 small';
+        d.textContent = 'Please enter your username/email and password.';
+        var old = this.querySelector('.js-err'); if (old) old.remove();
+        d.classList.add('js-err'); this.prepend(d);
+        return;
+      }
+      document.getElementById('signinBtn').disabled = true;
+    });
+  })();
+</script>
+{% endblock %}

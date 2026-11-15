@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Attendance corrections</h1>
+<a class="btn btn-outline-mk {% if status == 'pending' %}active{% endif %}" href="?status=pending">Pending</a>
+<a class="btn btn-outline-mk {% if status == 'approved' %}active{% endif %}" href="?status=approved">Approved</a>
+<a class="btn btn-outline-mk {% if status == 'rejected' %}active{% endif %}" href="?status=rejected">Rejected</a></div></div>
+<div class="panel"><div class="table-responsive"><table class="table table-mk">
+<thead><tr><th>Employee</th><th>Date</th><th>Requested in</th><th>Requested out</th><th>Reason</th><th>Status</th><th></th></tr></thead><tbody>
+{% for c in items %}<tr><td>{{ c.employee.full_name }}<br><small>{{ c.employee.employee_number }}</small></td><td>{{ c.date|date:"j M Y" }}</td>
+<td>{{ c.requested_clock_in|time:"H:i"|default:"-" }}</td><td>{{ c.requested_clock_out|time:"H:i"|default:"-" }}</td><td style="max-width:260px">{{ c.reason }}</td>
+<td><span class="badge-mk st-{{ c.status }}">{{ c.get_status_display }}</span>{% if c.reviewed_by %}<br><small>by {{ c.reviewed_by.display_name }}</small>{% endif %}</td>
+<td style="min-width:230px">{% if c.status == 'pending' %}<form method="post" action="{% url 'attendance:correction_review' c.pk %}">{% csrf_token %}
+<input class="form-control form-control-sm mb-1" name="note" placeholder="Note (optional)">
+<button class="btn btn-sm btn-success" name="decision" value="approve">Approve</button> <button class="btn btn-sm btn-outline-danger" name="decision" value="reject">Reject</button></form>{% else %}<small>{{ c.review_note }}</small>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted py-4">Nothing here.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

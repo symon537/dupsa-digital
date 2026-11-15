@@ -1,0 +1,9 @@
+{% extends "mobile/base.html" %}
+{% block content %}
+<h1 class="m-h1">Confirm attendance</h1><p class="m-role">{{ profile.full_name }} &bull; {{ profile.employee_number }}</p>
+<div class="m-card"><div id="qrInfo" class="result-box result-info mt-0">Checking QR code&hellip;</div>
+<div class="m-card gps-card mt-3 mb-0"><i class="bi bi-geo-alt-fill pin"></i><div><div class="fw-bold">Location (GPS)</div><div id="gpsStatus" class="gps-wait">Checking location&hellip;</div></div></div>
+<div class="clock-btns mt-3"><button class="btn-clock in" id="btnIn" type="button" disabled><i class="bi bi-clock"></i> Clock In</button><button class="btn-clock out" id="btnOut" type="button" disabled><i class="bi bi-clock"></i> Clock Out</button></div></div>
+<div id="clockResult"></div><a class="btn btn-outline-mk w-100" href="{% url 'my:home' %}">Back to My Attendance</a>
+{% include "mobile/_clock_ui.html" %}
+{% endblock %}

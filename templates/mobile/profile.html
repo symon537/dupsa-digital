@@ -1,0 +1,7 @@
+{% extends "mobile/base.html" %}
+{% block content %}<h1 class="m-h1">My Profile</h1>
+<div class="m-card text-center">{% if profile.photo %}<img class="emp-photo" src="{{ profile.photo.url }}" alt="">{% else %}<div class="avatar-lg mx-auto">{{ profile.initials }}</div>{% endif %}
+<h5 class="mt-2 mb-0">{{ profile.full_name }}</h5><div class="text-muted">{{ profile.position.name|default:"Staff" }}</div><span class="m-idpill">{{ profile.employee_number }}</span></div>
+<div class="m-card"><dl class="kv mb-0"><dt>Branch</dt><dd>{{ profile.branch.name }}</dd><dt>Department</dt><dd>{{ profile.department.name|default:"-" }}</dd><dt>Phone</dt><dd>{{ profile.phone|default:"-" }}</dd><dt>Email</dt><dd>{{ profile.user.email|default:"-" }}</dd><dt>Employed since</dt><dd>{{ profile.employment_date|date:"j M Y" }}</dd></dl></div>
+<a class="btn btn-outline-mk w-100 mb-2" href="{% url 'accounts:change_password' %}">Change password</a>
+<form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="btn btn-mk w-100">Logout</button></form>{% endblock %}

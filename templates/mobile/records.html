@@ -1,0 +1,5 @@
+{% extends "mobile/base.html" %}
+{% block content %}<h1 class="m-h1">My Records</h1>
+<div class="m-card"><div class="rec-grid" style="grid-template-columns:repeat(3,1fr)"><div class="cell"><div class="lbl">Days worked (month)</div><div class="val">{{ summary.days }}</div></div><div class="cell"><div class="lbl">Late</div><div class="val">{{ summary.late }}</div></div><div class="cell"><div class="lbl">Hours</div><div class="val">{{ summary.hours }}</div></div></div></div>
+<div class="m-card">{% for r in page %}<div class="m-list-item"><div><strong>{{ r.date|date:"D j M Y" }}</strong><small>{{ r.clock_in|time:"H:i"|default:"--:--" }} &rarr; {{ r.clock_out|time:"H:i"|default:"--:--" }} &middot; {{ r.worked_display }}</small></div><span class="badge-mk st-{{ r.status }} align-self-center">{{ r.get_status_display }}</span></div>
+{% empty %}<div class="text-center text-muted py-3">No records yet.</div>{% endfor %}{% include "partials/pagination.html" %}</div>{% endblock %}

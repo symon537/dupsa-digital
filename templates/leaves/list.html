@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Leave management</h1><div class="d-flex gap-2">
+<a class="btn btn-outline-mk btn-sm" href="{% url 'leaves:calendar' %}"><i class="bi bi-calendar3"></i> Calendar</a>
+<a class="btn btn-outline-mk btn-sm" href="{% url 'leaves:types' %}">Leave types</a></div></div>
+<form class="filter-bar row g-2" method="get"><div class="col-md-3"><select class="form-select" name="status" onchange="this.form.submit()"><option value="">All statuses</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div></form>
+<div class="panel"><div class="table-responsive"><table class="table table-mk">
+<thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th><th></th></tr></thead><tbody>
+{% for a in page %}<tr><td>{{ a.employee.full_name }}<br><small>{{ a.employee.employee_number }}</small></td><td>{{ a.leave_type.name }}</td><td>{{ a.start_date|date:"j M Y" }}</td><td>{{ a.end_date|date:"j M Y" }}</td><td>{{ a.days }}</td>
+<td style="max-width:220px">{{ a.reason|default:"-" }}{% if a.document %}<br><a href="{{ a.document.url }}" target="_blank">Document</a>{% endif %}</td>
+<td><span class="badge-mk st-{{ a.status }}">{{ a.get_status_display }}</span>{% if a.reviewed_by %}<br><small>{{ a.reviewed_by.display_name }}</small>{% endif %}</td>
+<td style="min-width:220px">{% if a.status == 'pending' and can_review %}<form method="post" action="{% url 'leaves:review' a.pk %}">{% csrf_token %}<input class="form-control form-control-sm mb-1" name="note" placeholder="Note (optional)">
+<button class="btn btn-sm btn-success" name="decision" value="approve">Approve</button> <button class="btn btn-sm btn-outline-danger" name="decision" value="reject">Reject</button></form>{% else %}<small>{{ a.review_note }}</small>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="8" class="text-center text-muted py-4">No leave applications.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</div>
+{% endblock %}

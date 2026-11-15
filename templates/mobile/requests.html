@@ -1,0 +1,13 @@
+{% extends "mobile/base.html" %}
+{% block content %}<h1 class="m-h1">Requests</h1>
+<div class="m-card"><div class="fw-bold mb-2">Leave balances</div>{% for b in balances %}<div class="m-list-item"><span>{{ b.leave_type.name }}</span><b>{% if b.leave_type.unlimited %}No limit{% else %}{{ b.remaining }} / {{ b.entitled_days }} days{% endif %}</b></div>{% endfor %}</div>
+<div class="m-card"><div class="fw-bold mb-2">Apply for leave</div><form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+{% if leave_form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ leave_form.non_field_errors }}</div>{% endif %}
+{% for f in leave_form %}<div class="mb-2"><label class="form-label small">{{ f.label }}</label>{{ f }}{% for e in f.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</div>{% endfor %}
+<button class="btn btn-mk w-100" name="submit_leave" value="1">Submit leave request</button></form></div>
+<div class="m-card"><div class="fw-bold mb-2">My leave requests</div>{% for a in leaves %}<div class="m-list-item"><div><strong>{{ a.leave_type.name }}</strong><small>{{ a.start_date|date:"j M" }} &ndash; {{ a.end_date|date:"j M Y" }} ({{ a.days }} d)</small>{% if a.review_note %}<small>{{ a.review_note }}</small>{% endif %}</div>
+<div class="text-end"><span class="badge-mk st-{{ a.status }}">{{ a.get_status_display }}</span>{% if a.status == 'pending' %}<form method="post" action="{% url 'my:leave_cancel' a.pk %}" class="mt-1">{% csrf_token %}<button class="btn btn-sm btn-outline-danger py-0">Cancel</button></form>{% endif %}</div></div>{% empty %}<div class="text-muted small">No leave requests.</div>{% endfor %}</div>
+<div class="m-card"><div class="fw-bold mb-2">Request attendance correction</div><form method="post" novalidate>{% csrf_token %}
+{% for f in corr_form %}<div class="mb-2"><label class="form-label small">{{ f.label }}</label>{{ f }}{% for e in f.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</div>{% endfor %}
+<button class="btn btn-mk w-100" name="submit_correction" value="1">Submit correction</button></form>
+{% for c in corrections %}<div class="m-list-item"><div><strong>{{ c.date|date:"j M Y" }}</strong><small>{{ c.reason|truncatechars:60 }}</small></div><span class="badge-mk st-{{ c.status }} align-self-center">{{ c.get_status_display }}</span></div>{% endfor %}</div>{% endblock %}

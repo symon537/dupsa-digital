@@ -1,0 +1,13 @@
+{% extends "base_auth.html" %}
+{% load static %}
+{% block title %}Access denied{% endblock %}
+{% block body %}
+<main class="login-page">
+  <section class="login-card text-center">
+    <img src="{% static 'images/emblem-color.png' %}" alt="" style="width:80px">
+    <h1 class="login-title">Access denied</h1>
+    <p class="login-sub">Your role does not allow you to open this page.</p>
+    <a class="btn btn-signin" href="/">Back to my dashboard</a>
+  </section>
+</main>
+{% endblock %}

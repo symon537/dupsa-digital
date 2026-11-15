@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>User management</h1><a class="btn btn-mk btn-sm" href="{% url 'accounts:user_create' %}"><i class="bi bi-person-plus"></i> New user</a></div>
+<form class="filter-bar row g-2" method="get"><div class="col-md-4"><input class="form-control" name="q" placeholder="Search" value="{{ q }}"></div>
+<div class="col-md-3"><select class="form-select" name="role"><option value="">All roles</option>{% for v,l in roles %}<option value="{{ v }}" {% if role == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div><div class="col-md-2"><button class="btn btn-mk">Filter</button></div></form>
+<div class="panel"><div class="table-responsive"><table class="table table-mk"><thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>
+{% for u in users %}<tr><td>{{ u.username }}</td><td>{{ u.display_name }}</td><td>{{ u.email|default:"-" }}</td><td>{{ u.role_label }}</td><td><span class="badge-mk {% if u.is_active %}st-active{% else %}st-terminated{% endif %}">{% if u.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+<td class="text-end text-nowrap"><a class="btn btn-sm btn-outline-mk" href="{% url 'accounts:user_edit' u.pk %}">Edit</a>
+{% if u.pk != request.user.pk %}<form class="d-inline" method="post" action="{% url 'accounts:user_toggle' u.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

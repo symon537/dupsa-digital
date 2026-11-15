@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>QR Code Management</h1><div class="sub">Each branch has its own signed, expiring QR code. Print the poster and display it at the entrance.</div></div>
+<div class="row g-3">
+{% for b in branches %}<div class="col-md-6 col-xl-4"><div class="panel qr-card">
+  <h5 style="color:var(--mk-burgundy)">{{ b.name }} <small class="text-muted">({{ b.code }})</small></h5>
+  {% if b.current_qr %}
+    <img src="{% url 'branches:qr_image' b.pk %}" alt="QR code for {{ b.name }}">
+    <div class="small text-muted my-2">Valid until {{ b.current_qr.expires_at|date:"j M Y" }}</div>
+    <div class="d-flex gap-2 justify-content-center">
+      <a class="btn btn-mk btn-sm" target="_blank" href="{% url 'branches:qr_poster' b.pk %}"><i class="bi bi-printer"></i> Print poster</a>
+      <a class="btn btn-outline-mk btn-sm" download="{{ b.code }}-qr.png" href="{% url 'branches:qr_image' b.pk %}"><i class="bi bi-download"></i> PNG</a>
+      {% if can_manage %}<form method="post" action="{% url 'branches:qr_rotate' b.pk %}" onsubmit="return confirm('Issue a new QR code? The old one will stop working.')">{% csrf_token %}<button class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-repeat"></i> Rotate</button></form>{% endif %}
+    </div>
+  {% else %}<p class="text-muted">No active QR code.</p>{% endif %}
+</div></div>{% empty %}<div class="col-12"><div class="panel text-center text-muted">No active branches.</div></div>{% endfor %}
+</div>
+{% endblock %}

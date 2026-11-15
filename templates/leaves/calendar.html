@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Leave calendar &ndash; {{ month|date:"F Y" }}</h1><div class="d-flex gap-2">
+<a class="btn btn-outline-secondary btn-sm" href="?month={{ prev }}">&laquo; Prev</a><a class="btn btn-outline-secondary btn-sm" href="?month={{ next }}">Next &raquo;</a><a class="btn btn-outline-mk btn-sm" href="{% url 'leaves:list' %}">List view</a></div></div>
+<div class="panel"><div class="table-responsive"><table class="table table-bordered cal-table mb-0">
+<thead><tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead><tbody>
+{% for week in weeks %}<tr>{% for c in week %}<td class="{% if not c.in_month %}dim{% endif %} {% if c.today %}today{% endif %}"><strong>{{ c.date.day }}</strong>{% for n in c.leaves %}<span class="cal-chip">{{ n }}</span>{% endfor %}</td>{% endfor %}</tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

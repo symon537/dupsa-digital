@@ -1,0 +1,10 @@
+{% load static %}<!doctype html><html lang="en"><head><meta charset="utf-8"><title>QR poster - {{ branch.name }}</title>
+<link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}"><link rel="stylesheet" href="{% static 'css/malkia.css' %}"></head>
+<body style="background:#f6eef2"><div class="container py-4">
+<div class="text-center mb-3 no-print"><button class="btn btn-mk" onclick="window.print()">Print</button> <a class="btn btn-outline-secondary" href="{% url 'branches:qr_list' %}">Back</a></div>
+<div class="poster">
+  <img src="{% static 'images/emblem-color.png' %}" alt="" style="height:26mm"><p class="brand-word" style="font-family:var(--mk-serif);color:var(--mk-burgundy);font-weight:700;text-transform:uppercase;letter-spacing:.05em;line-height:1.05">Malkia<br>Konnect</p>
+  <h2>Scan to Clock In / Clock Out</h2>
+  {% if qr %}<img class="qr" src="{% url 'branches:qr_image' branch.pk %}" alt="QR code">{% else %}<p class="text-danger">No active QR code.</p>{% endif %}
+  <p class="mt-3 mb-0 fs-5 fw-bold">{{ branch.name }}</p><p class="text-muted">Open the Malkia Konnect app, log in, then scan this code.</p>
+</div></div></body></html>

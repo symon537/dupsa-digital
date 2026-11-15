@@ -1,0 +1,25 @@
+{% extends "mobile/base.html" %}
+{% block content %}
+<h1 class="m-h1">My Attendance</h1>
+<div class="m-hello"><div class="name">Hello, <b>{{ profile.user.first_name|default:profile.user.username }} {{ profile.user.last_name }}</b> &#128075;</div><span class="m-idpill">{{ profile.employee_number }}</span></div>
+<div class="m-role">{{ profile.position.name|default:"Staff" }} &bull; {{ profile.branch.name }}</div>
+<div class="scan-row">
+  <button class="scan-card" type="button" id="scanBtn"><div class="frame"><i class="bi bi-qr-code-scan"></i></div><strong>Scan Office QR Code</strong><small>Point your phone camera to the Malkia Konnect office QR code</small></button>
+  <div class="clock-btns">
+    <button class="btn-clock in" type="button" id="btnIn" {% if record.clock_in %}disabled{% endif %}><i class="bi bi-clock"></i> Clock In</button>
+    <button class="btn-clock out" type="button" id="btnOut" {% if not record.clock_in or record.clock_out %}disabled{% endif %}><i class="bi bi-clock"></i> Clock Out</button>
+    <a class="how-link" href="#how" data-bs-toggle="collapse"><i class="bi bi-question-circle"></i> How it works?</a>
+  </div>
+</div>
+<div class="collapse" id="how"><div class="m-card small"><ol class="mb-0 ps-3"><li>Tap <b>Clock In</b> or <b>Clock Out</b>.</li><li>Allow location when your phone asks.</li><li>Scan the QR code displayed at your branch.</li><li>You will see a confirmation. Done!</li></ol></div></div>
+<div class="m-card gps-card"><i class="bi bi-geo-alt-fill pin"></i><div class="flex-grow-1"><div class="fw-bold">Location (GPS)</div><div id="gpsStatus" class="gps-wait">Checking location&hellip;</div><small class="text-muted" id="gpsPlace">{{ profile.branch.name }}</small></div><small class="text-muted" id="gpsAcc"></small></div>
+<div id="clockResult"></div>
+<div class="m-card"><div class="fw-bold mb-2">Today's Record &ndash; {{ today|date:"j M Y" }}</div>
+<div class="rec-grid" id="recGrid">
+<div class="cell in"><i class="bi bi-box-arrow-in-right"></i><div class="lbl">Arrival</div><div class="val" id="rArr">{{ record.clock_in|time:"H:i"|default:"--:--" }}</div></div>
+<div class="cell out"><i class="bi bi-box-arrow-right"></i><div class="lbl">Departure</div><div class="val" id="rDep">{{ record.clock_out|time:"H:i"|default:"--:--" }}</div></div>
+<div class="cell hrs"><i class="bi bi-hourglass-split"></i><div class="lbl">Total Hours</div><div class="val" id="rHrs">{% if record.clock_out %}{{ record.worked_display }}{% else %}--{% endif %}</div></div>
+<div class="cell st"><i class="bi bi-person-check"></i><div class="lbl">Status</div><div class="val" id="rSt">{% if record %}<span class="badge-mk st-{{ record.status }}">{{ record.get_status_display }}</span>{% else %}Not in{% endif %}</div></div></div>
+{% if shift %}<div class="small text-muted mt-2"><i class="bi bi-clock-history"></i> Shift: {{ shift.name }} ({{ shift.start_time|time:"H:i" }}&ndash;{{ shift.end_time|time:"H:i" }})</div>{% endif %}</div>
+{% include "mobile/_clock_ui.html" with token="" %}
+{% endblock %}

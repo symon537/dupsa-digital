@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Leave types</h1><a class="btn btn-outline-secondary btn-sm" href="{% url 'leaves:list' %}">Back</a></div>
+<div class="row g-3"><div class="col-lg-7"><div class="panel"><div class="table-responsive"><table class="table table-mk">
+<thead><tr><th>Name</th><th>Days/year</th><th>Paid</th><th>Document</th><th>For</th><th></th></tr></thead><tbody>
+{% for t in types %}<tr><td>{{ t.name }}{% if not t.is_active %} <span class="badge-mk st-terminated">Inactive</span>{% endif %}</td><td>{% if t.unlimited %}No limit{% else %}{{ t.days_per_year }}{% endif %}</td><td>{{ t.is_paid|yesno:"Yes,No" }}</td><td>{{ t.requires_document|yesno:"Required,-" }}</td>
+<td>{{ t.get_gender_restriction_display|default:"Any" }}</td><td class="text-end"><a class="btn btn-sm btn-outline-mk" href="{% url 'leaves:type_edit' t.pk %}">Edit</a></td></tr>{% endfor %}</tbody></table></div></div></div>
+<div class="col-lg-5"><div class="panel"><div class="panel-title">Add leave type</div><form method="post" novalidate>{% csrf_token %}{% include "partials/form_fields.html" %}<button class="btn btn-mk mt-3">Add</button></form></div></div></div>
+{% endblock %}

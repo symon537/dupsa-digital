@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Shifts &amp; Schedules</h1>
+{% if can_manage %}<div class="d-flex gap-2"><a class="btn btn-outline-mk btn-sm" href="{% url 'shifts:assign' %}">Assign shift</a><a class="btn btn-mk btn-sm" href="{% url 'shifts:create' %}">Create shift</a></div>{% endif %}</div>
+<div class="panel mb-3"><div class="panel-title">Shifts</div><div class="table-responsive"><table class="table table-mk">
+<thead><tr><th>Name</th><th>Hours</th><th>Break</th><th>Grace</th><th>Scope</th><th>Assigned</th><th></th></tr></thead><tbody>
+{% for s in shifts %}<tr><td>{{ s.name }}{% if not s.is_active %} <span class="badge-mk st-terminated">Inactive</span>{% endif %}</td><td>{{ s.start_time|time:"H:i" }} - {{ s.end_time|time:"H:i" }}</td><td>{{ s.break_minutes }} min</td><td>{{ s.grace_minutes }} min</td>
+<td>{{ s.branch.name|default:"All branches" }} / {{ s.department.name|default:"All departments" }}</td><td>{{ s.n }}</td><td class="text-end">{% if can_manage %}<a class="btn btn-sm btn-outline-mk" href="{% url 'shifts:edit' s.pk %}">Edit</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted">No shifts defined. The company default (08:00-17:00) applies.</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="panel"><div class="panel-title">Recent assignments</div><div class="table-responsive"><table class="table table-mk">
+<thead><tr><th>Employee</th><th>Shift</th><th>From</th><th>To</th><th></th></tr></thead><tbody>
+{% for a in assignments %}<tr><td>{{ a.employee.full_name }} <small>{{ a.employee.employee_number }}</small></td><td>{{ a.shift.name }}</td><td>{{ a.start_date|date:"j M Y" }}</td><td>{{ a.end_date|date:"j M Y"|default:"open" }}</td>
+<td class="text-end">{% if can_manage %}<form method="post" action="{% url 'shifts:assignment_delete' a.pk %}" onsubmit="return confirm('Remove this assignment?')">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">Remove</button></form>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5" class="text-center text-muted">No assignments.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

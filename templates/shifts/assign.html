@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Assign shift</h1></div>
+<form method="post" class="card-form" novalidate>{% csrf_token %}{% include "partials/form_fields.html" %}
+<div class="mt-4 d-flex gap-2"><button class="btn btn-mk px-4">Assign</button><a class="btn btn-outline-secondary" href="{% url 'shifts:list' %}">Cancel</a></div></form>
+{% endblock %}

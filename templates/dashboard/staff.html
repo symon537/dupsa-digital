@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ title }}</h1><div class="sub">Welcome, {{ request.user.display_name }}</div></div>
+  <div class="date-pill"><i class="bi bi-calendar3 me-1"></i>Today: {{ today|date:"j M Y" }}</div>
+</div>
+{% if not stats.working_day %}<div class="alert alert-info py-2">Today is not a working day (weekend or public holiday), so absences are not counted.</div>{% endif %}
+<div class="row g-3 mb-3" id="statCards">
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico"><i class="bi bi-people"></i></div><div><div class="stat-label">Total<br>Employees</div><div class="stat-value" data-stat="total_employees">{{ stats.total_employees }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico green"><i class="bi bi-check-circle-fill"></i></div><div><div class="stat-label">Present<br>Today</div><div class="stat-value green" data-stat="present">{{ stats.present }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico orange"><i class="bi bi-clock"></i></div><div><div class="stat-label">Late<br>Arrivals</div><div class="stat-value orange" data-stat="late">{{ stats.late }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico red"><i class="bi bi-person-x"></i></div><div><div class="stat-label">Absent<br>Today</div><div class="stat-value red" data-stat="absent">{{ stats.absent }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico purple"><i class="bi bi-calendar2-heart"></i></div><div><div class="stat-label">Employees<br>on Leave</div><div class="stat-value" data-stat="on_leave">{{ stats.on_leave }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico green"><i class="bi bi-box-arrow-in-right"></i></div><div><div class="stat-label">Currently<br>Clocked In</div><div class="stat-value" data-stat="clocked_in">{{ stats.clocked_in }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico"><i class="bi bi-building"></i></div><div><div class="stat-label">Total<br>Branches</div><div class="stat-value" data-stat="branches">{{ stats.branches }}</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-ico"><i class="bi bi-pie-chart"></i></div><div><div class="stat-label">Attendance<br>Percentage</div><div class="stat-value">{{ stats.attendance_pct }}%</div></div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-7"><div class="panel"><div class="panel-title">Attendance Trend (Last 7 Days)</div><div class="chart-box"><canvas id="trend7"></canvas></div></div></div>
+  <div class="col-lg-5"><div class="panel"><div class="panel-title">Attendance by Branch (Today)</div><div id="branchBars"></div></div></div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-lg-7"><div class="panel"><div class="panel-title">Attendance by Month</div><div class="chart-box"><canvas id="trendMonth"></canvas></div></div></div>
+  <div class="col-lg-5"><div class="panel"><div class="panel-title">Department Comparison (Today)</div><div id="deptBars"></div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-8"><div class="panel">
+    <div class="panel-title">Recent Clock-In (Today) <a href="{% url 'attendance:list' %}">View All</a></div>
+    <div class="table-responsive"><table class="table table-mk">
+      <thead><tr><th>#</th><th>Employee</th><th>Branch</th><th>Clock In</th><th>Clock Out</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for r in recent %}
+        <tr><td>{{ forloop.counter }}</td><td>{{ r.employee.full_name }}<br><small>{{ r.employee.employee_number }}</small></td>
+          <td>{{ r.branch.name|default:"-" }}</td><td>{{ r.clock_in|time:"H:i" }}</td><td>{{ r.clock_out|time:"H:i"|default:"-" }}</td>
+          <td><span class="badge-mk st-{{ r.status }}">{{ r.get_status_display }}</span></td></tr>
+      {% empty %}<tr><td colspan="6" class="text-center text-muted py-4">No clock-ins recorded yet today.</td></tr>{% endfor %}
+      </tbody></table></div>
+  </div></div>
+  <div class="col-lg-4"><div class="panel"><div class="panel-title">Today's Attendance</div><div class="chart-box" style="height:210px"><canvas id="donut"></canvas></div>
+    <div class="text-center mt-2"><span class="fs-4 fw-bold" style="color:var(--mk-burgundy)">{{ stats.attendance_pct }}%</span> <span class="text-muted">Presence</span></div></div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'vendor/chart.umd.min.js' %}"></script>
+<script>
+(function () {
+  function bars(el, rows) {
+    el.innerHTML = rows.length ? '' : '<div class="text-muted small">No data yet.</div>';
+    rows.forEach(function (r) {
+      var d = document.createElement('div'); d.className = 'bar-row';
+      d.innerHTML = '<div class="name"></div><div class="bar-track"><div class="bar-fill"></div></div><div class="pct"><span></span> <b></b></div>';
+      d.querySelector('.name').textContent = r.name;
+      d.querySelector('.bar-fill').style.width = Math.min(100, r.percent) + '%';
+      d.querySelector('.pct span').textContent = r.present + '/' + r.total;
+      d.querySelector('.pct b').textContent = Math.round(r.percent) + '%';
+      el.appendChild(d);
+    });
+  }
+  fetch('{% url "api_dashboard_charts" %}', {credentials: 'same-origin'}).then(function (r) { return r.json(); }).then(function (j) {
+    var c = j.charts, B = '#650D35', M = '#B52D78', O = '#ED8B19', G = '#229B45', R = '#D93636';
+    new Chart(document.getElementById('trend7'), {type: 'line',
+      data: {labels: c.trend7.labels, datasets: [{label: 'Attendance %', data: c.trend7.percent, borderColor: M, backgroundColor: 'rgba(181,45,120,.15)', fill: true, tension: .3}]},
+      options: {maintainAspectRatio: false, scales: {y: {min: 0, max: 100}}, plugins: {legend: {display: false}}}});
+    new Chart(document.getElementById('trendMonth'), {type: 'bar',
+      data: {labels: c.trend_month.labels, datasets: [{label: 'Present', data: c.trend_month.present, backgroundColor: B}, {label: 'Late', data: c.trend_month.late, backgroundColor: O}, {label: 'Absent', data: c.trend_month.absent, backgroundColor: R}]},
+      options: {maintainAspectRatio: false}});
+    new Chart(document.getElementById('donut'), {type: 'doughnut',
+      data: {labels: c.donut.labels, datasets: [{data: c.donut.values, backgroundColor: [G, O, '#6b46a6', R]}]},
+      options: {maintainAspectRatio: false, cutout: '62%', plugins: {legend: {position: 'right'}}}});
+    bars(document.getElementById('branchBars'), c.by_branch);
+    bars(document.getElementById('deptBars'), c.by_department);
+  }).catch(function () {
+    document.getElementById('branchBars').textContent = 'Charts could not be loaded.';
+  });
+})();
+</script>
+{% endblock %}

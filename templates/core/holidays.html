@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Public holidays</h1><a class="btn btn-outline-secondary btn-sm" href="{% url 'core:settings' %}">Back to settings</a></div>
+<div class="row g-3"><div class="col-lg-7"><div class="panel"><table class="table table-mk"><thead><tr><th>Date</th><th>Holiday</th><th>Branch</th><th></th></tr></thead><tbody>
+{% for h in holidays %}<tr><td>{{ h.date|date:"D j M Y" }}</td><td>{{ h.name }}</td><td>{{ h.branch.name|default:"All" }}</td><td class="text-end"><form method="post" action="{% url 'core:holiday_delete' h.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">Remove</button></form></td></tr>
+{% empty %}<tr><td colspan="4" class="text-center text-muted">No holidays.</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="col-lg-5"><div class="panel"><div class="panel-title">Add holiday</div><form method="post" novalidate>{% csrf_token %}{% include "partials/form_fields.html" %}<button class="btn btn-mk mt-3">Add</button></form></div></div></div>
+{% endblock %}

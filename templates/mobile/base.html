@@ -1,0 +1,20 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{% block title %}My Attendance{% endblock %} - Malkia Konnect</title><meta name="theme-color" content="#650D35">
+<link rel="icon" href="{% static 'images/icon-192.png' %}">
+<link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}"><link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}"><link rel="stylesheet" href="{% static 'css/malkia.css' %}">
+</head><body class="mobile-body"><div class="m-shell">
+<header class="m-top"><button type="button" aria-label="Menu" data-bs-toggle="dropdown"><i class="bi bi-list"></i></button>
+<ul class="dropdown-menu"><li><a class="dropdown-item" href="{% url 'accounts:change_password' %}">Change password</a></li>
+{% if request.user.role != 'employee' %}<li><a class="dropdown-item" href="{% url 'core:home' %}">Management dashboard</a></li>{% endif %}
+<li><form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="dropdown-item" type="submit" style="color:#241523;font-size:1rem">Logout</button></form></li></ul>
+<a class="brand" href="{% url 'my:home' %}"><img src="{% static 'images/emblem-light.png' %}" alt=""><span>Malkia<br>Konnect</span></a>
+<a href="{% url 'my:notifications' %}" aria-label="Notifications"><i class="bi bi-bell"></i>{% if unread_count %}<span class="count">{{ unread_count }}</span>{% endif %}</a>
+<a href="{% url 'my:profile' %}" aria-label="Profile"><span class="avatar" style="width:34px;height:34px;background:#fff;color:#650D35">{% if profile.photo %}<img src="{{ profile.photo.url }}" alt="">{% else %}{{ request.user.display_name|slice:":1"|upper }}{% endif %}</span></a></header>
+<div class="m-body">{% include "partials/messages.html" %}{% block content %}{% endblock %}</div>
+<nav class="tabbar" aria-label="Employee">
+<a href="{% url 'my:home' %}" class="{% if nav == 'home' %}active{% endif %}"><i class="bi bi-house-fill"></i>Attendance</a>
+<a href="{% url 'my:records' %}" class="{% if nav == 'records' %}active{% endif %}"><i class="bi bi-calendar3"></i>My Records</a>
+<a href="{% url 'my:requests' %}" class="{% if nav == 'requests' %}active{% endif %}"><i class="bi bi-file-earmark-text"></i>Requests</a>
+<a href="{% url 'my:profile' %}" class="{% if nav == 'profile' %}active{% endif %}"><i class="bi bi-person"></i>Profile</a></nav></div>
+<script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>{% block scripts %}{% endblock %}</body></html>

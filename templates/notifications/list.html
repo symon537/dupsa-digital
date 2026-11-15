@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Notifications</h1><div class="d-flex gap-2">
+<a class="btn btn-outline-mk btn-sm" href="?filter={% if filter == 'unread' %}{% else %}unread{% endif %}">{% if filter == 'unread' %}Show all{% else %}Unread only{% endif %}</a>
+<form method="post" action="{% url 'notifications:read_all' %}">{% csrf_token %}<button class="btn btn-outline-secondary btn-sm">Mark all read</button></form>
+{% if can_announce %}<a class="btn btn-mk btn-sm" href="{% url 'notifications:announce' %}"><i class="bi bi-megaphone"></i> Announcement</a>{% endif %}</div></div>
+<div class="panel">{% for n in page %}
+<div class="m-list-item"><div><strong>{% if not n.is_read %}<i class="bi bi-circle-fill text-danger" style="font-size:.5rem"></i> {% endif %}{{ n.title }}</strong><small>{{ n.message }}</small><small>{{ n.created_at|date:"j M Y, H:i" }} &middot; {{ n.get_category_display }}</small></div>
+{% if not n.is_read %}<form method="post" action="{% url 'notifications:read' n.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{% url 'notifications:list' %}"><button class="btn btn-sm btn-outline-mk">Mark read</button></form>{% endif %}</div>
+{% empty %}<div class="text-center text-muted py-4">You have no notifications.</div>{% endfor %}{% include "partials/pagination.html" %}</div>
+{% endblock %}

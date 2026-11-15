@@ -1,0 +1,10 @@
+{% load static %}
+<div id="clockApp" data-in-url="{% url 'api_clock_in' %}" data-out-url="{% url 'api_clock_out' %}" data-check-url="{% url 'api_qr_check' %}" data-token="{{ token|default:'' }}"
+     data-has-in="{% if record.clock_in %}1{% endif %}" data-has-out="{% if record.clock_out %}1{% endif %}">{% csrf_token %}</div>
+<div class="scan-modal" id="scanModal" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><div class="scan-box">
+  <div class="d-flex justify-content-between align-items-center mb-2"><strong id="scanTitle" style="color:var(--mk-burgundy)">Scan office QR code</strong><button type="button" class="btn-close" id="scanClose" aria-label="Close"></button></div>
+  <div id="reader"></div><div id="scanMsg" class="result-box result-info">Point your camera at the Malkia Konnect QR code.</div>
+  <details class="mt-2"><summary class="small fw-semibold">Camera not working? Paste the code</summary>
+    <div class="input-group input-group-sm mt-2"><input class="form-control" id="manualToken" placeholder="Paste QR link or code"><button class="btn btn-mk" type="button" id="manualGo">Use</button></div></details>
+</div></div>
+<script src="{% static 'vendor/html5-qrcode.min.js' %}"></script><script src="{% static 'js/clock.js' %}"></script>

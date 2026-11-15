@@ -1,0 +1,5 @@
+{% extends "mobile/base.html" %}
+{% block content %}<h1 class="m-h1">Notifications</h1>
+<form method="post" action="{% url 'notifications:read_all' %}" class="mb-2">{% csrf_token %}<input type="hidden" name="next" value="{% url 'my:notifications' %}"><button class="btn btn-sm btn-outline-mk">Mark all read</button></form>
+<div class="m-card">{% for n in items %}<div class="m-list-item"><div><strong>{% if not n.is_read %}<i class="bi bi-circle-fill text-danger" style="font-size:.5rem"></i> {% endif %}{{ n.title }}</strong><small>{{ n.message }}</small><small>{{ n.created_at|date:"j M, H:i" }}</small></div></div>
+{% empty %}<div class="text-center text-muted py-3">No notifications.</div>{% endfor %}</div>{% endblock %}

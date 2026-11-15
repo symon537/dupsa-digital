@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Branches</h1>{% if can_manage %}<a class="btn btn-mk btn-sm" href="{% url 'branches:create' %}"><i class="bi bi-plus-lg"></i> Add branch</a>{% endif %}</div>
+<div class="panel"><div class="table-responsive"><table class="table table-mk">
+<thead><tr><th>Branch</th><th>Code</th><th>Address</th><th>GPS</th><th>Radius</th><th>Manager</th><th>Staff</th><th>Present today</th><th>Status</th><th></th></tr></thead><tbody>
+{% for b in branches %}<tr><td><strong>{{ b.name }}</strong></td><td>{{ b.code }}</td><td>{{ b.address|default:"-" }}</td><td><small>{{ b.latitude }}, {{ b.longitude }}</small></td>
+<td>{{ b.radius_m }} m</td><td>{{ b.manager.display_name|default:"-" }}</td><td>{{ b.staff }}</td><td>{{ b.present_today }}</td>
+<td><span class="badge-mk {% if b.is_active %}st-active{% else %}st-terminated{% endif %}">{% if b.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+<td class="text-end text-nowrap">{% if can_manage %}<a class="btn btn-sm btn-outline-mk" href="{% url 'branches:edit' b.pk %}">Edit</a>
+<form class="d-inline" method="post" action="{% url 'branches:toggle' b.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary">{% if b.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="10" class="text-center text-muted py-4">No branches yet.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

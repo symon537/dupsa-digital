@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Reports &amp; Analytics</h1></div>
+<form class="filter-bar row g-2" method="get">
+<div class="col-md-3">{{ form.type }}</div><div class="col-md-2">{{ form.date_from }}</div><div class="col-md-2">{{ form.date_to }}</div>
+<div class="col-md-2">{{ form.branch }}</div><div class="col-md-3">{{ form.department }}</div>
+<div class="col-md-4">{{ form.employee }}</div>
+<div class="col-md-8 d-flex gap-2"><button class="btn btn-mk">Generate</button></div>
+{% for f in form %}{% for e in f.errors %}<div class="col-12 text-danger small">{{ f.label }}: {{ e }}</div>{% endfor %}{% endfor %}</form>
+{% if report %}
+<div class="panel"><div class="panel-title"><span>{{ report.title }} &middot; <span class="text-muted fw-normal">{{ report.subtitle }}</span></span>
+<span class="d-flex gap-2"><a class="btn btn-sm btn-outline-mk" href="?{{ qs }}&format=pdf"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+<a class="btn btn-sm btn-outline-mk" href="?{{ qs }}&format=xlsx"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+<a class="btn btn-sm btn-outline-mk" href="?{{ qs }}&format=csv"><i class="bi bi-filetype-csv"></i> CSV</a></span></div>
+<div class="table-responsive"><table class="table table-mk"><thead><tr>{% for c in report.columns %}<th>{{ c }}</th>{% endfor %}</tr></thead><tbody>
+{% for row in rows %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% empty %}<tr><td colspan="{{ report.columns|length }}" class="text-center text-muted py-4">No data for this selection.</td></tr>{% endfor %}</tbody></table></div>
+{% if truncated %}<div class="small text-muted mt-2">Showing the first 500 rows. Export to see everything.</div>{% endif %}</div>
+{% else %}<div class="panel text-center text-muted py-5">Choose a report and press <strong>Generate</strong>.</div>{% endif %}
+{% endblock %}

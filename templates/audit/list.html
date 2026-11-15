@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Audit logs</h1></div>
+<form class="filter-bar row g-2" method="get">
+<div class="col-md-3"><input class="form-control" name="q" placeholder="User, target or detail" value="{{ filters.q }}"></div>
+<div class="col-md-2"><select class="form-select" name="action"><option value="">All actions</option>{% for g in groups %}<option value="{{ g }}" {% if filters.action == g %}selected{% endif %}>{{ g }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><input type="date" class="form-control" name="from" value="{{ filters.from }}"></div><div class="col-md-2"><input type="date" class="form-control" name="to" value="{{ filters.to }}"></div>
+<div class="col-md-3"><button class="btn btn-mk">Filter</button> <a class="btn btn-outline-secondary" href="{% url 'audit:list' %}">Reset</a></div></form>
+<div class="panel"><div class="table-responsive"><table class="table table-mk"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Target</th><th>Detail</th><th>IP</th></tr></thead><tbody>
+{% for l in page %}<tr><td class="text-nowrap">{{ l.created_at|date:"j M Y H:i:s" }}</td><td>{{ l.username|default:"-" }}</td><td><code>{{ l.action }}</code></td><td>{{ l.target }}</td><td style="max-width:340px">{{ l.detail }}</td><td>{{ l.ip_address|default:"-" }}</td></tr>
+{% empty %}<tr><td colspan="6" class="text-center text-muted py-4">No log entries.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</div>
+{% endblock %}

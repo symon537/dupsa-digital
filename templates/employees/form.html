@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>{% if emp %}Edit employee{% else %}Register employee{% endif %}</h1></div>
+<form method="post" enctype="multipart/form-data" class="card-form" novalidate>{% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <div class="mt-4 d-flex gap-2"><button class="btn btn-mk px-4" type="submit">Save</button>
+    <a class="btn btn-outline-secondary" href="{% if emp %}{% url 'employees:detail' emp.pk %}{% else %}{% url 'employees:list' %}{% endif %}">Cancel</a></div>
+</form>
+{% endblock %}

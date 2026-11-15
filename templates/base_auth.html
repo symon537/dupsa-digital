@@ -1,0 +1,18 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Malkia Konnect{% endblock %}</title>
+  <meta name="theme-color" content="#650D35">
+  <link rel="icon" href="{% static 'images/icon-192.png' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/malkia.css' %}">
+</head>
+<body>
+{% block body %}{% endblock %}
+<script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
